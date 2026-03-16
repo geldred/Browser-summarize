@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  macOS Launchd job: runs digest.py every Sunday at 8:00 AM.
+
+  SETUP:
+  1. Edit the paths below to match your system:
+     - Replace /Users/YOUR_USERNAME with your actual home directory
+     - Replace /path/to/Browser-summarize with the actual repo path
+
+  2. Copy to LaunchAgents:
+       cp setup/com.user.weeklydigest.plist ~/Library/LaunchAgents/
+
+  3. Load it:
+       launchctl load ~/Library/LaunchAgents/com.user.weeklydigest.plist
+
+  4. Verify:
+       launchctl list | grep weeklydigest
+
+  5. Test manually (runs immediately):
+       launchctl start com.user.weeklydigest
+
+  To unload:
+       launchctl unload ~/Library/LaunchAgents/com.user.weeklydigest.plist
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.user.weeklydigest</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <!-- Use the Python from your venv or system Python -->
+    <string>/Users/YOUR_USERNAME/.venv/bin/python</string>
+    <string>/Users/YOUR_USERNAME/path/to/Browser-summarize/digest.py</string>
+  </array>
+
+  <!-- Run every Sunday (weekday 1 = Sunday) at 08:00 AM -->
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Weekday</key>
+    <integer>0</integer>
+    <key>Hour</key>
+    <integer>8</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+
+  <!-- Working directory — must match repo location -->
+  <key>WorkingDirectory</key>
+  <string>/Users/YOUR_USERNAME/path/to/Browser-summarize</string>
+
+  <!-- Log output (create these directories first with mkdir -p) -->
+  <key>StandardOutPath</key>
+  <string>/Users/YOUR_USERNAME/WeeklyDigest/logs/digest.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/YOUR_USERNAME/WeeklyDigest/logs/digest.error.log</string>
+
+  <!-- Load environment variables (add your .env values here) -->
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>ANTHROPIC_API_KEY</key>
+    <string>sk-ant-REPLACE_ME</string>
+    <key>DIGEST_EMAIL_TO</key>
+    <string>you@gmail.com</string>
+    <key>GMAIL_CREDENTIALS_PATH</key>
+    <string>/Users/YOUR_USERNAME/.config/weekly-digest/credentials.json</string>
+    <key>GMAIL_TOKEN_PATH</key>
+    <string>/Users/YOUR_USERNAME/.config/weekly-digest/token.json</string>
+    <key>ICLOUD_DRIVE_PATH</key>
+    <string>/Users/YOUR_USERNAME/Library/Mobile Documents/com~apple~CloudDocs/WeeklyDigest</string>
+    <key>ARCHIVE_PATH</key>
+    <string>/Users/YOUR_USERNAME/WeeklyDigest/archive</string>
+  </dict>
+
+  <key>RunAtLoad</key>
+  <false/>
+</dict>
+</plist>
